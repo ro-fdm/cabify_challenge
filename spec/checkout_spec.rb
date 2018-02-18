@@ -25,5 +25,22 @@ describe Checkout do
     end
   end
 
+  describe "with more products" do
+    it "sum prices" do
+      co = checkout
+      co.scan("VOUCHER")
+      co.scan("TSHIRT")
+      expect(co.total).to eq("25.00 €")
+    end
+
+    it "sum prices third products" do
+      co = checkout
+      co.scan("VOUCHER")
+      co.scan("TSHIRT")
+      co.scan("MUG")
+      expect(co.total).to eq("32.50 €")
+    end
+  end
+
 
 end
