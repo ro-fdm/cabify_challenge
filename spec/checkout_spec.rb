@@ -5,6 +5,12 @@ describe Checkout do
     Checkout.new
   end
 
+  let(:twoxone) do
+    pricing_rules = {
+      twoxone:["VOUCHER"]
+    }
+  end
+
   describe "with single product" do
     it "voucher product" do
       co = checkout
@@ -49,7 +55,7 @@ describe Checkout do
 
   describe "with pricing rules" do
     it "with discount 2*1" do
-      co = checkout
+      co = Checkout.new(twoxone)
       co.scan("VOUCHER")
       co.scan("TSHIRT")
       co.scan("VOUCHER")
@@ -57,7 +63,7 @@ describe Checkout do
       expect(co.total).to eq("25.00 €")
     end
 
-    describe "whit discount for bulk" do
+    it "whit discount for bulk" do
       co = checkout
       co.scan("TSHIRT")
       co.scan("TSHIRT")
@@ -68,7 +74,7 @@ describe Checkout do
       expect(co.total).to eq("81.00 €")
     end
 
-    describe "whit both discount (2*1 and bulk)" do
+    it "whit both discount (2*1 and bulk)" do
       co = checkout
       co.scan("VOUCHER")
       co.scan("TSHIRT")
