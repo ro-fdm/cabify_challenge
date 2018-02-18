@@ -11,6 +11,19 @@ describe Checkout do
     }
   end
 
+  let(:bulk) do
+    pricing_rules = {
+      bulk:["TSHIRT"]
+    }
+  end
+
+  let(:both) do
+    pricing_rules = {
+      twoxone:["VOUCHER"],
+      bulk:["TSHIRT"]
+    }
+  end
+
   describe "with single product" do
     it "voucher product" do
       co = checkout
@@ -64,7 +77,7 @@ describe Checkout do
     end
 
     it "whit discount for bulk" do
-      co = checkout
+      co = Checkout.new(bulk)
       co.scan("TSHIRT")
       co.scan("TSHIRT")
       co.scan("TSHIRT")
@@ -75,7 +88,7 @@ describe Checkout do
     end
 
     it "whit both discount (2*1 and bulk)" do
-      co = checkout
+      co = Checkout.new(both)
       co.scan("VOUCHER")
       co.scan("TSHIRT")
       co.scan("VOUCHER")

@@ -39,7 +39,10 @@ class Checkout
   end
 
   def apply_discounts
-    discounts = apply_twoxone + apply_bulk
+    discounts = 0
+    discounts += apply_twoxone if @pricing_rules[:twoxone]
+    discounts += apply_bulk if @pricing_rules[:bulk]
+    discounts
   end
 
   def apply_twoxone
@@ -55,5 +58,12 @@ class Checkout
 
   def apply_bulk
     discounts = 0
+    @pricing_rules[:bulk].each do |item_name|
+      if @cart.include?(item_name)
+        number_discounts = @cart.select{|item| item == item_name}.count
+        discounts = number_discounts * 100
+      end
+    end
+    discounts
   end
 end
