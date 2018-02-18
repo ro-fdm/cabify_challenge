@@ -1,0 +1,14 @@
+Code to cabify mobile challenge
+
+Results:
+Items: VOUCHER, TSHIRT, MUG
+Total: 32.50€
+
+Items: VOUCHER, TSHIRT, VOUCHER
+Total: 25.00€
+
+Items: TSHIRT, TSHIRT, TSHIRT, VOUCHER, TSHIRT
+Total: 81.00€
+
+Items: VOUCHER, TSHIRT, VOUCHER, VOUCHER, MUG, TSHIRT, TSHIRT
+Total: 74.50€
