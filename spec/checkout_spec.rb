@@ -68,7 +68,7 @@ describe Checkout do
 
   describe "with pricing rules" do
     it "with discount 2*1" do
-      co = Checkout.new(twoxone)
+      co = Checkout.new(pricing_rules: twoxone)
       co.scan("VOUCHER")
       co.scan("TSHIRT")
       co.scan("VOUCHER")
@@ -77,7 +77,7 @@ describe Checkout do
     end
 
     it "whit discount for bulk" do
-      co = Checkout.new(bulk)
+      co = Checkout.new(pricing_rules: bulk)
       co.scan("TSHIRT")
       co.scan("TSHIRT")
       co.scan("TSHIRT")
@@ -88,7 +88,7 @@ describe Checkout do
     end
 
     it "whit both discount (2*1 and bulk)" do
-      co = Checkout.new(both)
+      co = Checkout.new(pricing_rules: both)
       co.scan("VOUCHER")
       co.scan("TSHIRT")
       co.scan("VOUCHER")

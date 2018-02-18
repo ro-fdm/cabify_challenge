@@ -1,6 +1,6 @@
 require "awesome_print"
 class Checkout
-  def initialize(pricing_rules={})
+  def initialize(pricing_rules:{})
     @pricing_rules = pricing_rules
     @cart = []
   end
