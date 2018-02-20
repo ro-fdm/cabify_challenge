@@ -31,6 +31,12 @@ describe Checkout do
     }
   end
 
+  let(:combined_products) do
+    pricing_rules = {
+      combined_products: [{item1: "TSHIRT", item2: "MUG", discount: 750}]
+    }
+  end
+
   describe "with single product" do
     it "voucher product" do
       co = checkout
@@ -52,6 +58,13 @@ describe Checkout do
       
       expect(co.total).to eq("7.50 €")
     end
+
+    # it "product not exist" do
+    #   co = checkout
+    #   co.scan("no existe")
+
+    #   expect(co.price).to eq("error")
+    # end
   end
 
   describe "with more products" do
@@ -114,6 +127,14 @@ describe Checkout do
       co.scan("TSHIRT")
 
       expect(co.total).to eq("74.50 €")
+    end
+
+    it "mug free with tschirt" do
+      co = Checkout.new(pricing_rules: combined_products)
+      co.scan("TSHIRT")
+      co.scan("MUG")
+
+      expect(co.total).to eq("20.00 €")
     end
 
   end

@@ -24,11 +24,8 @@ class Checkout
   private
 
   def price(item)
-    if Product.find_name(item)
-      Product.find_name(item).price
-    else
-      "product not exist"
-    end
+    Product.find_name(item).price
+    #TODO ERROR CONTROL
   end
 
   def price_output(price)
@@ -39,6 +36,7 @@ class Checkout
     discounts = 0
     discounts += apply_twoxone if @pricing_rules[:twoxone]
     discounts += apply_bulk if @pricing_rules[:bulk]
+    discounts += apply_combined if @pricing_rules[:combined_products]
     discounts
   end
 
@@ -55,12 +53,30 @@ class Checkout
 
   def apply_bulk
     discounts = 0
+  SOLO SI HAY MAS DE TRES
     @pricing_rules[:bulk].each do |item_name, bulk_discount|
       if @cart.include?(item_name)
         number_discounts = @cart.select{|item| item == item_name}.count
         if number_discounts >= 3
           discounts = number_discounts * bulk_discount
         end
+      end
+    end
+    discounts
+  end
+
+  def apply_combined
+    discounts = 0
+    @pricing_rules[:combined_products].each do |rule|
+      if ( @cart & [ rule[:item1], rule[:item2] ] ).any?
+        number_item2 = @cart.select{|item| item == rule[:item2]}.count
+        number_item1  = @cart.select{|item| item == rule[:item1]}.count
+        if number_item2 <= number_item1
+          number_discounts = number_item2
+        else
+          number_discounts = number_item_1
+        end
+        discounts = number_discounts * rule[:discount]
       end
     end
     discounts
