@@ -2,9 +2,9 @@ require "awesome_print"
 class Checkout
 
   PRODUCTS = {
-    VOUCHER: { name: "VOUCHER", price: 500},
-    TSHIRT: { name: "TSHIRT", price: 2000},
-    MUG: { name: "MUG", price: 750}
+    VOUCHER: { name: "VOUCHER", price: 500, bulk_discount: nil},
+    TSHIRT: { name: "TSHIRT", price: 2000, bulk_discount: 100},
+    MUG: { name: "MUG", price: 750, bulk_discount: nil}
   }
 
   def initialize(pricing_rules:{})
@@ -65,7 +65,7 @@ class Checkout
     @pricing_rules[:bulk].each do |item_name|
       if @cart.include?(item_name)
         number_discounts = @cart.select{|item| item == item_name}.count
-        discounts = number_discounts * 100
+        discounts = number_discounts * PRODUCTS[item_name.to_sym][:bulk_discount]
       end
     end
     discounts
