@@ -13,14 +13,14 @@ describe Checkout do
 
   let(:bulk) do
     pricing_rules = {
-      bulk:["TSHIRT"]
+      bulk: { "TSHIRT"=> 100 },
     }
   end
 
   let(:both) do
     pricing_rules = {
       twoxone:["VOUCHER"],
-      bulk:["TSHIRT"]
+      bulk: { "TSHIRT"=> 100 }
     }
   end
 
