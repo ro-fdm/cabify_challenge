@@ -1,5 +1,12 @@
 require "awesome_print"
 class Checkout
+
+  PRODUCTS = {
+    VOUCHER: { name: "VOUCHER", price: 500, bulk_discount: nil},
+    TSHIRT: { name: "TSHIRT", price: 2000, bulk_discount: 100},
+    MUG: { name: "MUG", price: 750, bulk_discount: nil}
+  }
+
   def initialize(pricing_rules:{})
     @pricing_rules = pricing_rules
     @cart = []
@@ -23,12 +30,9 @@ class Checkout
   private
 
   def price(item)
-    if item == "VOUCHER"
-      500 # guardar siempre los precios como enteros
-    elsif item == "TSHIRT"
-      2000
-    elsif item == "MUG"
-      750
+    # prices always in integers
+    if PRODUCTS.keys.include?(item.to_sym)
+      PRODUCTS[item.to_sym][:price]
     else
       "product not exist"
     end
@@ -61,9 +65,11 @@ class Checkout
     @pricing_rules[:bulk].each do |item_name|
       if @cart.include?(item_name)
         number_discounts = @cart.select{|item| item == item_name}.count
-        discounts = number_discounts * 100
+        discounts = number_discounts * PRODUCTS[item_name.to_sym][:bulk_discount]
       end
     end
     discounts
   end
 end
+
+# convertir el 100 de bulk en algo que no sea un numero magico
