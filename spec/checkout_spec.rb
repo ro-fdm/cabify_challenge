@@ -1,6 +1,13 @@
 require 'spec_helper'
 
 describe Checkout do
+
+  before(:each) do
+    Product.new("VOUCHER", 500)
+    Product.new("TSHIRT", 2000)
+    Product.new("MUG", 750)
+  end
+
   let(:checkout) do
     Checkout.new
   end

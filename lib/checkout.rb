@@ -1,12 +1,6 @@
 require "awesome_print"
+require "product.rb"
 class Checkout
-
-  PRODUCTS = {
-    VOUCHER: { name: "VOUCHER", price: 500 },
-    TSHIRT: { name: "TSHIRT", price: 2000 },
-    MUG: { name: "MUG", price: 750 }
-  }
-
   def initialize(pricing_rules:{})
     @pricing_rules = pricing_rules
     @cart = []
@@ -31,8 +25,8 @@ class Checkout
 
   def price(item)
     # prices always in integers
-    if PRODUCTS.keys.include?(item.to_sym)
-      PRODUCTS[item.to_sym][:price]
+    if Product.find_name(item)
+      Product.find_name(item).price
     else
       "product not exist"
     end
