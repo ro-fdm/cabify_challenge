@@ -14,6 +14,7 @@ class Product
   end
 
   def price
+    # prices always in integers 2.55 € => 255
     @price
   end
 

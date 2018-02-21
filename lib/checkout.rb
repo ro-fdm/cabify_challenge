@@ -24,7 +24,6 @@ class Checkout
   private
 
   def price(item)
-    # prices always in integers
     if Product.find_name(item)
       Product.find_name(item).price
     else
