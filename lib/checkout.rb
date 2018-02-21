@@ -36,44 +36,45 @@ class Checkout
     discounts = 0
     @pricing_rules.each do |method_name, rules|
       rules.each do |rule|
-        discounts += send(method_name, rule)
+        discounts += general_rule(method_name, rule)
       end
     end
     discounts
+  end
+
+  def general_rule(method_name, rule)
+    discounts = 0
+    number_discounts = 0
+    if (@cart.include?(rule[:item]) && @cart.select{|item| item == rule[:item]}.count >= rule[:minimum])
+      number_discounts = send(method_name, rule)
+    end
+    discounts = number_discounts * rule[:discount]
   end
 
   def twoxone(rule)
-    discounts = 0
-    if @cart.include?(rule[:item])
-      number_discounts = @cart.select{|item| item == rule[:item]}.count / rule[:minimum]
-      discounts = number_discounts * price(rule[:item])
-    end
-    discounts
+    rule[:discount] = price(rule[:item])
+    @cart.select{|item| item == rule[:item]}.count / rule[:minimum]
   end
 
   def bulk(rule)
-    discounts = 0
-    if @cart.include?(rule[:item])
-      number_discounts = @cart.select{|item| item == rule[:item]}.count
-      if number_discounts >= rule[:minimum]
-        discounts = number_discounts * rule[:discount]
-      end
+    number_items = @cart.select{|item| item == rule[:item]}.count
+    if number_items >= rule[:minimum]
+      number_items
+    else
+      0
     end
-    discounts
   end
 
   def combined_products(rule)
-    discounts = 0
-    if ( @cart & [ rule[:item1], rule[:item2] ] ).any?
+    if @cart.include?(rule[:item2])
       number_item2 = @cart.select{|item| item == rule[:item2]}.count
-      number_item1  = @cart.select{|item| item == rule[:item1]}.count
+      number_item1  = @cart.select{|item| item == rule[:item]}.count
       if number_item2 <= number_item1
         number_discounts = number_item2
       else
         number_discounts = number_item_1
       end
-      discounts = number_discounts * rule[:discount]
     end
-    discounts
+    number_discounts
   end
 end
