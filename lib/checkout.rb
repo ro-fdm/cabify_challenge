@@ -34,50 +34,45 @@ class Checkout
 
   def apply_discounts
     discounts = 0
-    discounts += apply_twoxone if @pricing_rules[:twoxone]
-    discounts += apply_bulk if @pricing_rules[:bulk]
-    discounts += apply_combined if @pricing_rules[:combined_products]
-    discounts
-  end
-
-  def apply_twoxone
-    discounts = 0
-    @pricing_rules[:twoxone].each do |item_name|
-      if @cart.include?(item_name)
-        number_discounts = @cart.select{|item| item == item_name}.count / 2
-        discounts = number_discounts * price(item_name)
+    @pricing_rules.each do |method_name, rules|
+      rules.each do |rule|
+        discounts += send(method_name, rule)
       end
     end
     discounts
   end
 
-  def apply_bulk
+  def twoxone(rule)
     discounts = 0
-  SOLO SI HAY MAS DE TRES
-    @pricing_rules[:bulk].each do |item_name, bulk_discount|
-      if @cart.include?(item_name)
-        number_discounts = @cart.select{|item| item == item_name}.count
-        if number_discounts >= 3
-          discounts = number_discounts * bulk_discount
-        end
-      end
+    if @cart.include?(rule[:item])
+      number_discounts = @cart.select{|item| item == rule[:item]}.count / rule[:minimum]
+      discounts = number_discounts * price(rule[:item])
     end
     discounts
   end
 
-  def apply_combined
+  def bulk(rule)
     discounts = 0
-    @pricing_rules[:combined_products].each do |rule|
-      if ( @cart & [ rule[:item1], rule[:item2] ] ).any?
-        number_item2 = @cart.select{|item| item == rule[:item2]}.count
-        number_item1  = @cart.select{|item| item == rule[:item1]}.count
-        if number_item2 <= number_item1
-          number_discounts = number_item2
-        else
-          number_discounts = number_item_1
-        end
+    if @cart.include?(rule[:item])
+      number_discounts = @cart.select{|item| item == rule[:item]}.count
+      if number_discounts >= rule[:minimum]
         discounts = number_discounts * rule[:discount]
       end
+    end
+    discounts
+  end
+
+  def combined_products(rule)
+    discounts = 0
+    if ( @cart & [ rule[:item1], rule[:item2] ] ).any?
+      number_item2 = @cart.select{|item| item == rule[:item2]}.count
+      number_item1  = @cart.select{|item| item == rule[:item1]}.count
+      if number_item2 <= number_item1
+        number_discounts = number_item2
+      else
+        number_discounts = number_item_1
+      end
+      discounts = number_discounts * rule[:discount]
     end
     discounts
   end

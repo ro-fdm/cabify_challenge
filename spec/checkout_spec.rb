@@ -14,20 +14,20 @@ describe Checkout do
 
   let(:twoxone) do
     pricing_rules = {
-      twoxone:["VOUCHER"]
+      twoxone: [{ item:"VOUCHER", minimum: 2}]
     }
   end
 
   let(:bulk) do
     pricing_rules = {
-      bulk: { "TSHIRT"=> 100 },
+      bulk: [{ item: "TSHIRT", discount: 100, minimum: 3 }],
     }
   end
 
   let(:both) do
     pricing_rules = {
-      twoxone:["VOUCHER"],
-      bulk: { "TSHIRT"=> 100 }
+      twoxone: [{ item: "VOUCHER", minimum: 2}],
+      bulk: [{ item: "TSHIRT", discount: 100, minimum: 3}]
     }
   end
 
