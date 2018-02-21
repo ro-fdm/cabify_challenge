@@ -15,10 +15,10 @@ item/s: product is necesary buy to apply discount
 minimum: minimum amount of items necesary to apply discount
 
 Exist three types of descounts:
-- twoxone: Typical discount if you bougth two, only pay one or you pay three only pay 1
+- one_free: Typical discount if you bougth two o three, you get one free
 Example: 
   pricing_rules = {
-      twoxone: [{ item:"VOUCHER", minimum: 2}]
+      one_free: [{ item:"VOUCHER", minimum: 2}]
     }
 
 - bulk: If you pay certain number, you price is less

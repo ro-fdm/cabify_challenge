@@ -12,9 +12,9 @@ describe Checkout do
     Checkout.new
   end
 
-  let(:twoxone) do
+  let(:one_free) do
     pricing_rules = {
-      twoxone: [{ item:"VOUCHER", minimum: 2}]
+      one_free: [{ item:"VOUCHER", minimum: 2}]
     }
   end
 
@@ -26,7 +26,7 @@ describe Checkout do
 
   let(:both) do
     pricing_rules = {
-      twoxone: [{ item: "VOUCHER", minimum: 2}],
+      one_free: [{ item: "VOUCHER", minimum: 2}],
       bulk: [{ item: "TSHIRT", discount: 100, minimum: 3}]
     }
   end
@@ -34,6 +34,13 @@ describe Checkout do
   let(:combined_products) do
     pricing_rules = {
       combined_products: [{item: "TSHIRT", item2: "MUG", discount: 750, minimum: 1}]
+    }
+  end
+
+  let(:both_combined) do
+    pricing_rules = {
+      combined_products: [{item: "TSHIRT", item2: "MUG", discount: 750, minimum: 1}],
+      bulk: [{ item: "TSHIRT", discount: 100, minimum: 3}]
     }
   end
 
@@ -87,83 +94,121 @@ describe Checkout do
   end
 
   describe "with pricing rules" do
-    it "with discount 2*1" do
-      co = Checkout.new(pricing_rules: twoxone)
-      co.scan("VOUCHER")
-      co.scan("TSHIRT")
-      co.scan("VOUCHER")
 
-      expect(co.total).to eq("25.00 €")
+    describe "with discount one free" do
+      it "with discount 2*1" do
+        co = Checkout.new(pricing_rules: one_free)
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+
+        expect(co.total).to eq("25.00 €")
+      end
+
+      it "with discount no apply" do
+        co = Checkout.new(pricing_rules: one_free)
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+
+        expect(co.total).to eq("25.00 €")
+      end
+
+      it "with discount 3*2" do
+        pricing_rules = {
+          one_free: [{ item:"VOUCHER", minimum: 3}]
+        }
+        co = Checkout.new(pricing_rules: pricing_rules)
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+        co.scan("VOUCHER")
+
+        expect(co.total).to eq("30.00 €")
+      end
+
+
+      it "with discount 4*3" do
+        pricing_rules = {
+          one_free: [{ item:"VOUCHER", minimum: 4}]
+        }
+        co = Checkout.new(pricing_rules: pricing_rules)
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+        co.scan("VOUCHER")
+        co.scan("VOUCHER")
+
+        expect(co.total).to eq("35.00 €")
+      end
     end
 
-    it "with discount 3*2" do
-      pricing_rules = {
-        twoxone: [{ item:"VOUCHER", minimum: 3}]
-      }
-      co = Checkout.new(pricing_rules: pricing_rules)
-      co.scan("VOUCHER")
-      co.scan("TSHIRT")
-      co.scan("VOUCHER")
-      co.scan("VOUCHER")
+    describe "with bulk discount" do
+      it "whitout enought products" do
+        co = Checkout.new(pricing_rules: bulk)
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
 
-      expect(co.total).to eq("30.00 €")
+        expect(co.total).to eq("45.00 €")
+      end
+
+      it "whit enought products" do
+        co = Checkout.new(pricing_rules: bulk)
+        co.scan("TSHIRT")
+        co.scan("TSHIRT")
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+
+        expect(co.total).to eq("81.00 €")
+      end
+
     end
 
+    describe "with two discount" do
+      it "whit (2*1 and bulk)" do
+        co = Checkout.new(pricing_rules: both)
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+        co.scan("VOUCHER")
+        co.scan("MUG")
+        co.scan("TSHIRT")
+        co.scan("TSHIRT")
 
-    it "with discount 4*3" do
-      pricing_rules = {
-        twoxone: [{ item:"VOUCHER", minimum: 4}]
-      }
-      co = Checkout.new(pricing_rules: pricing_rules)
-      co.scan("VOUCHER")
-      co.scan("TSHIRT")
-      co.scan("VOUCHER")
-      co.scan("VOUCHER")
-      co.scan("VOUCHER")
+        expect(co.total).to eq("74.50 €")
+      end
 
-      expect(co.total).to eq("35.00 €")
+      it "with bulk and combined products" do
+        co = Checkout.new(pricing_rules: both_combined)
+        co.scan("VOUCHER")
+        co.scan("TSHIRT")
+        co.scan("VOUCHER")
+        co.scan("VOUCHER")
+        co.scan("MUG")
+        co.scan("TSHIRT")
+        co.scan("TSHIRT")
+
+        expect(co.total).to eq("72.00 €")
+      end
     end
 
-    it "whitout discount for bulk" do
-      co = Checkout.new(pricing_rules: bulk)
-      co.scan("TSHIRT")
-      co.scan("VOUCHER")
-      co.scan("TSHIRT")
+    describe "with combined_products" do
 
-      expect(co.total).to eq("45.00 €")
+      it "mug free with tschirt" do
+        co = Checkout.new(pricing_rules: combined_products)
+        co.scan("TSHIRT")
+        co.scan("MUG")
+
+        expect(co.total).to eq("20.00 €")
+      end
+
+      it "mug not include" do
+        co = Checkout.new(pricing_rules: combined_products)
+        co.scan("TSHIRT")
+
+        expect(co.total).to eq("20.00 €")
+      end
     end
-
-    it "whit discount for bulk" do
-      co = Checkout.new(pricing_rules: bulk)
-      co.scan("TSHIRT")
-      co.scan("TSHIRT")
-      co.scan("TSHIRT")
-      co.scan("VOUCHER")
-      co.scan("TSHIRT")
-
-      expect(co.total).to eq("81.00 €")
-    end
-
-    it "whit both discount (2*1 and bulk)" do
-      co = Checkout.new(pricing_rules: both)
-      co.scan("VOUCHER")
-      co.scan("TSHIRT")
-      co.scan("VOUCHER")
-      co.scan("VOUCHER")
-      co.scan("MUG")
-      co.scan("TSHIRT")
-      co.scan("TSHIRT")
-
-      expect(co.total).to eq("74.50 €")
-    end
-
-    it "mug free with tschirt" do
-      co = Checkout.new(pricing_rules: combined_products)
-      co.scan("TSHIRT")
-      co.scan("MUG")
-
-      expect(co.total).to eq("20.00 €")
-    end
-
   end
 end

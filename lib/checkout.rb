@@ -11,14 +11,9 @@ class Checkout
   end
 
   def total
-    total = 0
-    discounts = 0
-    @cart.each do |item|
-      total += price(item)
-    end
-    discounts = apply_discounts unless @pricing_rules.empty?
-    total = total - discounts
-    price_output(total)
+    total = @cart.inject(0){|sum, item| sum + price(item) }
+    discounts = @pricing_rules.empty? ? 0 : sum_discounts
+    price_output(total - discounts)
   end
 
   private
@@ -32,48 +27,48 @@ class Checkout
     sprintf("%.2f", (price/100.0)) + " €"
   end
 
-  def apply_discounts
-    discounts = 0
-    @pricing_rules.each do |method_name, rules|
-      rules.each do |rule|
-        discounts += general_rule(method_name, rule)
-      end
+  def sum_discounts
+    @pricing_rules.inject(0) do |sum_discounts, (discount, rules)|
+      sum_discounts + apply_discounts(discount, rules)
     end
-    discounts
   end
 
-  def general_rule(method_name, rule)
+  def apply_discounts(discount, rules)
+    rules.inject(0){|sum, rule| sum + general_policy(discount, rule) }
+  end
+
+  def general_condition(rule)
+    (@cart.include?(rule[:item]) && @cart.select{|item| item == rule[:item]}.count >= rule[:minimum])
+  end
+
+  def general_policy(discount, rule)
     discounts = 0
-    number_discounts = 0
-    if (@cart.include?(rule[:item]) && @cart.select{|item| item == rule[:item]}.count >= rule[:minimum])
-      number_discounts = send(method_name, rule)
+
+    unless rule[:discount]
+      rule[:discount] = price(rule[:item])
     end
+
+    number_discounts = general_condition(rule) ? send(discount, rule) : 0
+
     discounts = number_discounts * rule[:discount]
   end
 
-  def twoxone(rule)
-    rule[:discount] = price(rule[:item])
+  def one_free(rule)
     @cart.select{|item| item == rule[:item]}.count / rule[:minimum]
   end
 
   def bulk(rule)
     number_items = @cart.select{|item| item == rule[:item]}.count
-    if number_items >= rule[:minimum]
-      number_items
-    else
-      0
-    end
+    number_items >= rule[:minimum] ? number_items : 0
   end
 
   def combined_products(rule)
+    number_discounts = 0
     if @cart.include?(rule[:item2])
+      number_item  = @cart.select{|item| item == rule[:item]}.count
       number_item2 = @cart.select{|item| item == rule[:item2]}.count
-      number_item1  = @cart.select{|item| item == rule[:item]}.count
-      if number_item2 <= number_item1
-        number_discounts = number_item2
-      else
-        number_discounts = number_item_1
-      end
+
+      number_discounts = (number_item2 <= number_item) ? number_item2 : number_item
     end
     number_discounts
   end
