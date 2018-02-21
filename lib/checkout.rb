@@ -65,7 +65,9 @@ class Checkout
     @pricing_rules[:bulk].each do |item_name, bulk_discount|
       if @cart.include?(item_name)
         number_discounts = @cart.select{|item| item == item_name}.count
-        discounts = number_discounts * bulk_discount
+        if number_discounts >= 3
+          discounts = number_discounts * bulk_discount
+        end
       end
     end
     discounts

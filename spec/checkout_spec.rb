@@ -76,6 +76,15 @@ describe Checkout do
       expect(co.total).to eq("25.00 €")
     end
 
+    it "whitout discount for bulk" do
+      co = Checkout.new(pricing_rules: bulk)
+      co.scan("TSHIRT")
+      co.scan("VOUCHER")
+      co.scan("TSHIRT")
+
+      expect(co.total).to eq("45.00 €")
+    end
+
     it "whit discount for bulk" do
       co = Checkout.new(pricing_rules: bulk)
       co.scan("TSHIRT")
