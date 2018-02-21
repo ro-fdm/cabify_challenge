@@ -8,12 +8,13 @@ class Product
     Product.all.detect{|p| p.name == name}
   end
 
-  def initialize(name, price)
-    @name = name
+  def initialize(product_name, price)
+    @name = product_name
     @price = price
   end
 
   def price
+    # prices always in integers 2.55 € => 255
     @price
   end
 
