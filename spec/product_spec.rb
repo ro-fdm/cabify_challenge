@@ -29,8 +29,10 @@ describe Product do
 
     it "find_name" do
       expect(Product.find_name("VOUCHER")).not_to be_nil
-      expect(Product.find_name("rocio")).to be_nil
     end
 
+    it "no exist product" do
+      expect(Product.find_name("rocio")).to be_nil
+    end
   end
 end
