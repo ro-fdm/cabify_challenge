@@ -14,20 +14,26 @@ describe Checkout do
 
   let(:twoxone) do
     pricing_rules = {
-      twoxone:["VOUCHER"]
+      twoxone: [{ item:"VOUCHER", minimum: 2}]
     }
   end
 
   let(:bulk) do
     pricing_rules = {
-      bulk: { "TSHIRT"=> 100 },
+      bulk: [{ item: "TSHIRT", discount: 100, minimum: 3 }],
     }
   end
 
   let(:both) do
     pricing_rules = {
-      twoxone:["VOUCHER"],
-      bulk: { "TSHIRT"=> 100 }
+      twoxone: [{ item: "VOUCHER", minimum: 2}],
+      bulk: [{ item: "TSHIRT", discount: 100, minimum: 3}]
+    }
+  end
+
+  let(:combined_products) do
+    pricing_rules = {
+      combined_products: [{item: "TSHIRT", item2: "MUG", discount: 750, minimum: 1}]
     }
   end
 
@@ -52,6 +58,13 @@ describe Checkout do
       
       expect(co.total).to eq("7.50 €")
     end
+
+    # it "product not exist" do
+    #   co = checkout
+    #   co.scan("no existe")
+
+    #   expect(co.price).to eq("error")
+    # end
   end
 
   describe "with more products" do
@@ -81,6 +94,34 @@ describe Checkout do
       co.scan("VOUCHER")
 
       expect(co.total).to eq("25.00 €")
+    end
+
+    it "with discount 3*2" do
+      pricing_rules = {
+        twoxone: [{ item:"VOUCHER", minimum: 3}]
+      }
+      co = Checkout.new(pricing_rules: pricing_rules)
+      co.scan("VOUCHER")
+      co.scan("TSHIRT")
+      co.scan("VOUCHER")
+      co.scan("VOUCHER")
+
+      expect(co.total).to eq("30.00 €")
+    end
+
+
+    it "with discount 4*3" do
+      pricing_rules = {
+        twoxone: [{ item:"VOUCHER", minimum: 4}]
+      }
+      co = Checkout.new(pricing_rules: pricing_rules)
+      co.scan("VOUCHER")
+      co.scan("TSHIRT")
+      co.scan("VOUCHER")
+      co.scan("VOUCHER")
+      co.scan("VOUCHER")
+
+      expect(co.total).to eq("35.00 €")
     end
 
     it "whitout discount for bulk" do
@@ -114,6 +155,14 @@ describe Checkout do
       co.scan("TSHIRT")
 
       expect(co.total).to eq("74.50 €")
+    end
+
+    it "mug free with tschirt" do
+      co = Checkout.new(pricing_rules: combined_products)
+      co.scan("TSHIRT")
+      co.scan("MUG")
+
+      expect(co.total).to eq("20.00 €")
     end
 
   end

@@ -1,14 +1,36 @@
 Code to cabify mobile challenge
 
-Results:
-Items: VOUCHER, TSHIRT, MUG
-Total: 32.50€
+Interfaz: 
+To use is necessary to add Products. The Product have a name and a price
+Product.new("VOUCHER", 500)
+To checkout:
+co = Checkout.new(pricing_rules)
+co.scan("VOUCHER") # name of product
+co.total # result price of cart
 
-Items: VOUCHER, TSHIRT, VOUCHER
-Total: 25.00€
+pricing_rules: are the discounts. It is a Hash with the name of type of discount like key and like value a Array of Hashes, where each hash is a specific discount rule to apply.
 
-Items: TSHIRT, TSHIRT, TSHIRT, VOUCHER, TSHIRT
-Total: 81.00€
+The discounts have two arguments mandatory:
+item/s: product is necesary buy to apply discount
+minimum: minimum amount of items necesary to apply discount
 
-Items: VOUCHER, TSHIRT, VOUCHER, VOUCHER, MUG, TSHIRT, TSHIRT
-Total: 74.50€
+Exist three types of descounts:
+- twoxone: Typical discount if you bougth two, only pay one or you pay three only pay 1
+Example: 
+  pricing_rules = {
+      twoxone: [{ item:"VOUCHER", minimum: 2}]
+    }
+
+- bulk: If you pay certain number, you price is less
+Example: 
+  pricing_rules = {
+      bulk: [{ item: "TSHIRT", discount: 100, minimum: 3 }],
+    }
+  In bulk you have a third mandatory argument( discount). Its the amount you rest to each item.
+
+- combined_items: If you buy two object, the price is less.
+Example: 
+  pricing_rules = {
+      combined_products: [{item: "TSHIRT", item2: "MUG", discount: 750, minimum: 1}]
+    }
+    In this case you add a fourth mandatory argument (item2) that is a second neccesary object.

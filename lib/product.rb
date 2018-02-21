@@ -8,8 +8,8 @@ class Product
     Product.all.detect{|p| p.name == name}
   end
 
-  def initialize(name, price)
-    @name = name
+  def initialize(product_name, price)
+    @name = product_name
     @price = price
   end
 
