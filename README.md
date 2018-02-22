@@ -26,20 +26,21 @@ Example:
       one_free: [{ item:"VOUCHER", minimum: 2}]
     }
 ```
-- bulk: If you pay certain number, you price is less
+- bulk: If you pay certain number, you price is less.
+  In bulk you have a third mandatory argument( discount). Its the amount you rest to each item.
 Example: 
 ```
   pricing_rules = {
       bulk: [{ item: "TSHIRT", discount: 100, minimum: 3 }],
     }
 ```
-  In bulk you have a third mandatory argument( discount). Its the amount you rest to each item.
 
 - combined_items: If you buy two object, the price is less.
+  In this case you add a fourth mandatory argument (item2) that is a second neccesary object.
+
 Example: 
 ```
   pricing_rules = {
       combined_products: [{item: "TSHIRT", item2: "MUG", discount: 750, minimum: 1}]
     }
 ```
-    In this case you add a fourth mandatory argument (item2) that is a second neccesary object.
