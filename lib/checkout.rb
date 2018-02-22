@@ -1,5 +1,5 @@
 require "awesome_print"
-require "product.rb"
+require_relative "product.rb"
 class Checkout
   def initialize(pricing_rules:{})
     @pricing_rules = pricing_rules
