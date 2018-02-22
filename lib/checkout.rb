@@ -19,8 +19,9 @@ class Checkout
   private
 
   def price(item)
-    Product.find_name(item).price
-    #TODO ERROR CONTROL
+    product = Product.find_name(item)
+    raise ProductNotFound.new(item) unless product
+    product.price
   end
 
   def price_output(price)

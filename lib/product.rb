@@ -22,3 +22,12 @@ class Product
     @name
   end
 end
+
+class ProductNotFound < StandardError
+
+  def initialize(item,  messages=nil)
+    messages = "#{item} no encontrado"
+    super(messages)
+  end
+
+end

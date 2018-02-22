@@ -66,12 +66,12 @@ describe Checkout do
       expect(co.total).to eq("7.50 €")
     end
 
-    # it "product not exist" do
-    #   co = checkout
-    #   co.scan("no existe")
+    it "product not exist" do
+      co = checkout
+      co.scan("no existe")
 
-    #   expect(co.price).to eq("error")
-    # end
+      expect{ co.total }.to raise_error(ProductNotFound, "no existe no encontrado")
+    end
   end
 
   describe "with more products" do
